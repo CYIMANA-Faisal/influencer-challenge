@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
 
-function App() {
+import { useEffect } from "react";
+import { connect } from "react-redux";
+import './App.css';
+import Influencer from './components/influencer/Influencer';
+import {getInfluencers} from './redux/actions/influencer.actions'
+
+
+function App(props) {
+  useEffect(() => {
+    props.getInfluencers();
+  })
+  useEffect(() => {
+  }, [props.influencers])
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      {
+        props.influencers.length === 0 ? 
+          <p>Loading ...</p> : 
+          props.influencers.map((influencer) => (
+            <Influencer influencer={influencer} key={influencer.userId}/>
+          )
+        )
+      }
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    influencers: state.influencers,
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    getInfluencers: () => dispatch(getInfluencers()),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App)
